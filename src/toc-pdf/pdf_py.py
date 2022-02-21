@@ -1,8 +1,8 @@
 #%%
 from PyPDF2 import PdfFileWriter, PdfFileReader
-from tabula.io import read_pdf
 import re
 from tika import parser
+import click
 
 def generate_toc_pdf(filepath, start_toc, end_toc):
   writer = PdfFileWriter()
@@ -100,7 +100,6 @@ toc = extract_toc_list_from_pdf(outpath)
 write_new_pdf_toc('./DiscontinuousGalerkin.pdf', toc, 10-1, 14-2, 1)
 #%%
 
-import click
 @click.command()
 @click.option('-f', '--file', required=True, help='Filename of pdf.')
 @click.option('-s', '--start_toc', required=True, help='Page number of pdf for the first page of the table of contents.', type=int)
