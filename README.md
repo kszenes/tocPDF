@@ -12,7 +12,13 @@ This command line tools aims at resolving this by automatically generating the m
   - [Upcoming features](#upcoming-features)
 
 ## Installation
-To install this project, clone the repository using the following command:
+The program is packaged on PyPI and can be installed using pip:
+
+```shell
+pip3 install tocPDF
+```
+
+Alternatively, to install it manually, first, clone the repository using the following command:
 
 ```shell
 git clone https://github.com/kszenes/tocPDF.git
