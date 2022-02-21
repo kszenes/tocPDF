@@ -18,13 +18,13 @@ The program is packaged on PyPI and can be installed using pip:
 pip3 install tocPDF
 ```
 
-Alternatively, to install it manually, first, clone the repository using the following command:
+Alternatively, first clone the repository:
 
 ```shell
 git clone https://github.com/kszenes/tocPDF.git
 ```
 
-Then navigate into the base directory (toc-pdf-Package) of the project and install the package using pip:
+Then navigate into the base directory (toc-pdf-package) of the project and install the package using pip:
 
 ```shell
 pip3 install .
@@ -32,7 +32,6 @@ pip3 install .
 
 This will fetch all the necessary dependencies for running the program as well as install the CLI.
 
-(Program will be packaged in the future and uploaded to pypi.)
 
 ## Usage
 The program must be provided with the path to the PDF file that you wish to bookmark as well as the first and last page of the table of contents in the PDF.
