@@ -107,7 +107,7 @@ def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
 @click.option('-o', '--offset', required=True, help='Offset for pdf. Defined as pdf page number of first chapter.',  type=int)
 @click.option('-c', '--chapter_offset', default=0, help='Certain pdfs have additional offsets at each chapter. (EXPERIMENTAL)', type=int)
 def toc_pdf(file, start_toc, end_toc, offset, chapter_offset):
-  """Creates a new pdf called out.pdf with bookmarks generated from the table of contents."""
+  """Creates a new pdf called out.pdf with an outline generated from the table of contents."""
   filepath = './' + file
   outpath = generate_toc_pdf(filepath, start_toc-1, end_toc-1)  
   toc = extract_toc_list_from_pdf(outpath)

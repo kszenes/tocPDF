@@ -15,7 +15,27 @@ Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# toc-pdf
-Generate bookmarks for pdf using the table of contents. This project is still in development phase and may not work as expected all the time.
+# tocPDF
+Generate bookmarks for pdf using the table of contents. This project is still in early development phase.
+
+# Installation
+To install tocPDF clone the repository using the following command:
+
+```shell
+git clone https://github.com/kszenes/tocPDF.git
+```
+
+Then navigate into the base directory (toc-pdf-Package) of the project and install the package using pip:
+
+```shell
+pip3 install .
+```
+
+This will fetch all the necessary dependencies for running the program as well as install it into your current pip invironment.
+
+# Usage
+
+
+
 
 
