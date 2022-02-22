@@ -6,7 +6,7 @@ import click
 import pdfplumber
 import os
 
-def generate_toc_pdf(filepath, start_toc, end_toc, debug=False):
+def generate_toc_pdf(filepath, start_toc, end_toc):
   start_toc -= 1
   end_toc -= 1
   writer = PdfFileWriter()
@@ -19,7 +19,6 @@ def generate_toc_pdf(filepath, start_toc, end_toc, debug=False):
     outpath = filepath.rsplit('.', 1)[0] + '_toc.pdf'
     with open(outpath, 'wb') as out_pdf:
       writer.write(out_pdf)
-
 
   return outpath
 
