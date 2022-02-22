@@ -58,7 +58,7 @@ def extract_toc_list_from_pdf(filepath, debug=False):
       print('Warning: file_toc.pdf not deleted.')
   return correct_list
 
-def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
+def write_new_pdf_toc(filepath, toc, start_toc, offset, missing_pages, chapter_offset, reader_pdf_file=None):
   start_toc -= 1
   offset -= 2
   writer = PdfFileWriter()
@@ -66,8 +66,6 @@ def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
     reader = PdfFileReader(in_pdf)
     num_pages = reader.numPages
     writer.appendPagesFromReader(reader)
-
-
     hiearchy = [None] * 10
     writer.addBookmark('Table of Contents', start_toc)
 
@@ -88,33 +86,75 @@ def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
       elif 'Part' in name:
         continue
       else:
+        if missing_pages:
+          # print(f'missing pages: {name}')
+          offset = extract_page_num(filepath, page_num, offset, reader_pdf_file)
+          page_num = offset + int(page_num_original) - shift * chapter_offset
+          print(f'page_num = {page_num}')
         if level == 0:
-            if hiearchy[level] is not None:
-              shift += 1
-              page_num = offset + int(page_num_original) - shift * chapter_offset
             hiearchy[level] = writer.addBookmark(name, page_num)
         else:
-            hiearchy[level] = writer.addBookmark(
+          hiearchy[level] = writer.addBookmark(
                 name, page_num, parent=hiearchy[level-1])
 
-
     with open('./out.pdf', 'wb') as out_pdf:
+      print('outlined PDF written to out.pdf')
       writer.write(out_pdf)
 
 def get_page_num(filepath, page_num):
-  with pdfplumber.open(filepath) as f:
-    page_range = 0
-    page_list = f.pages[page_num-page_range:page_num+1+page_range]
-    text = ''
-    for page in page_list:
-      text = ' '.join((text, page.extract_text()))
-    print(re.findall(r' \d+\n', text))
-    return text
+  writer = PdfFileWriter
+  with open(filepath, 'rb') as in_pdf:
+    reader = PdfFileReader(in_pdf)
+    page = reader.getPage(page_num)
+    writer.addPage(page)
 
+    with open('./tmp.pdf', 'wb') as out_pdf:
+      writer.write(out_pdf)
 
-# %%
+def extract_page_num(filepath, page_num, offset, pdf_reader_file):
+  additional_offset = 0
+  expected_page = page_num - offset
+  page_number = -1
+  page = pdf_reader_file.pages[page_num]
+  line_list = page.extract_text().split('\n')
+  found_number = re.findall('^\d+|\d+$', line_list[0])
+  # print(f'Main page found number = {found_number}')
+  # if number found converts it to int
+  if found_number:
+    page_number = int(found_number[0])
 
-# text = get_page_num('../../example_pdf/DiscontinuousGalerkin.pdf', 31)
+  # check if expected page
+  if page_number == expected_page:
+    additional_offset = 0
+    # print('Correct pagenumber!')
+    pass
+  else:
+    # print('Not expected page number: computing page number.')
+    page_range = 2
+    pages = pdf_reader_file.pages[page_num+1:page_num+page_range+2]
+    book_numbers = [page_number]
+    for page in pages:
+      line_list = page.extract_text().split('\n')
+      found_number = re.findall('^\d+ | \d+$', line_list[0])
+      if found_number:
+        found_number = int(found_number[0])
+      else:
+        found_number = -1
+
+      book_numbers.append(found_number)
+
+    print(f'book_numbers = {book_numbers}')
+    for i in range(len(book_numbers)-1):
+      if book_numbers[i] + 1 == book_numbers[i+1]:
+        true_page = book_numbers[i] - i
+        print(f'expected book page = {expected_page}; true book page = {true_page}')
+        additional_offset = expected_page - true_page
+        # print(f'Computed book number {page_number}')
+        break
+
+  print(f'returned pdf page = {page_number}')
+
+  return offset + additional_offset
 
 
 # %%
@@ -123,13 +163,18 @@ def get_page_num(filepath, page_num):
 # toc = extract_toc_list_from_pdf(outpath)
 # write_new_pdf_toc(toc, 8, 19)
 
-# outpath = generate_toc_pdf('./Relativistic_Quantum_Chemistry.pdf', 6-1, 18-1)
+# outpath = generate_toc_pdf('/Users/kalmanszenes/code/tocPDF-package/example_pdf/Relativistic_Quantum_Chemistry.pdf', 6, 18)
 # toc = extract_toc_list_from_pdf(outpath)
-# write_new_pdf_toc('./Relativistic_Quantum_Chemistry.pdf', toc, 6-1, 24-2, 1)
+# print('opening pdfplumber')
+# with pdfplumber.open('/Users/kalmanszenes/code/tocPDF-package/example_pdf/Relativistic_Quantum_Chemistry.pdf') as file_reader:
+#   print(f'pdfplumber opened file')
+#   write_new_pdf_toc('/Users/kalmanszenes/code/tocPDF-package/example_pdf/Relativistic_Quantum_Chemistry.pdf', toc, 6, 24, 1, 0, file_reader)
 
-# outpath = generate_toc_pdf('./DiscontinuousGalerkin.pdf', 10-1, 13-1)
-# toc = extract_toc_list_from_pdf(outpath)
-# write_new_pdf_toc('./DiscontinuousGalerkin.pdf', toc, 10-1, 14-2, 1)
+outpath = generate_toc_pdf('/Users/kalmanszenes/code/tocPDF-package/example_pdf/DiscontinuousGalerkin.pdf', 10, 13)
+toc = extract_toc_list_from_pdf(outpath)
+with pdfplumber.open('/Users/kalmanszenes/code/tocPDF-package/example_pdf/Relativistic_Quantum_Chemistry.pdf') as file_reader:
+  print(f'pdfplumber opened file')
+  write_new_pdf_toc('/Users/kalmanszenes/code/tocPDF-package/example_pdf/DiscontinuousGalerkin.pdf', toc, 10, 14, 1, 0)
 
 # outpath = generate_toc_pdf('../../example_pdf/bayesian_data.pdf', 10, 13)
 # toc = extract_toc_list_from_pdf(outpath)
@@ -141,14 +186,15 @@ def get_page_num(filepath, page_num):
 @click.option('-s', '--start_toc', required=True, help='Page number of pdf for the first page of the table of contents.', type=int)
 @click.option('-e', '--end_toc', required=True, help='Page number of pdf for the last page of the table of contents.', type=int)
 @click.option('-o', '--offset', required=True, help='Offset for pdf. Defined as pdf page number of first chapter.',  type=int)
+@click.option('-m', '--missing_pages', default=False, help='inconsistent chaptering')
 @click.option('-c', '--chapter_offset', default=0, help='Certain pdfs have additional offsets at each chapter. (EXPERIMENTAL)', type=int)
 @click.option('-d', '--debug', default=False, help="Outputs separate pdf file (filename_toc.pdf) containing the pages provided for the table of contents. (used for debugging)")
-def toc_pdf(file, start_toc, end_toc, offset, chapter_offset, debug):
+def toc_pdf(file, start_toc, end_toc, offset, missing_pages, chapter_offset, debug):
   """Creates a new pdf called out.pdf with an outline generated from the table of contents."""
   filepath = './' + file
   outpath = generate_toc_pdf(filepath, start_toc, end_toc)  
   toc = extract_toc_list_from_pdf(outpath, debug)
-  write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset)
+  write_new_pdf_toc(filepath, toc, start_toc, offset, missing_pages, chapter_offset)
 
 
 if __name__ == '__main__':
