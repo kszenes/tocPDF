@@ -115,7 +115,7 @@ def get_page_num(filepath, page_num):
 
 # %%
 
-text = get_page_num('../../example_pdf/DiscontinuousGalerkin.pdf', 31)
+# text = get_page_num('../../example_pdf/DiscontinuousGalerkin.pdf', 31)
 
 
 # %%
@@ -132,9 +132,9 @@ text = get_page_num('../../example_pdf/DiscontinuousGalerkin.pdf', 31)
 # toc = extract_toc_list_from_pdf(outpath)
 # write_new_pdf_toc('./DiscontinuousGalerkin.pdf', toc, 10-1, 14-2, 1)
 
-outpath = generate_toc_pdf('../../example_pdf/bayesian_data.pdf', 10, 13)
-toc = extract_toc_list_from_pdf(outpath)
-write_new_pdf_toc('../../example_pdf/bayesian_data.pdf', toc, 10, 14, 0)
+# outpath = generate_toc_pdf('../../example_pdf/bayesian_data.pdf', 10, 13)
+# toc = extract_toc_list_from_pdf(outpath)
+# write_new_pdf_toc('../../example_pdf/bayesian_data.pdf', toc, 10, 14, 0)
 #%%
 
 @click.command()
