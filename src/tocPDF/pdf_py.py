@@ -3,8 +3,12 @@ from PyPDF2 import PdfFileWriter, PdfFileReader
 import re
 from tika import parser
 import click
+import pdfplumber
+import os
 
-def generate_toc_pdf(filepath, start_toc, end_toc):
+def generate_toc_pdf(filepath, start_toc, end_toc, debug=False):
+  start_toc -= 1
+  end_toc -= 1
   writer = PdfFileWriter()
   with open(filepath, 'rb') as in_pdf:
     reader = PdfFileReader(in_pdf)
@@ -15,7 +19,9 @@ def generate_toc_pdf(filepath, start_toc, end_toc):
     outpath = filepath.rsplit('.', 1)[0] + '_toc.pdf'
     with open(outpath, 'wb') as out_pdf:
       writer.write(out_pdf)
-      return outpath
+
+
+  return outpath
 
 def filter_chapter(line):
   flag_start = re.search(r'^\d+.* [A-Z]', line)
@@ -25,7 +31,7 @@ def filter_chapter(line):
   else:
     return True
 
-def extract_toc_list_from_pdf(filepath):
+def extract_toc_list_from_pdf(filepath, debug=False):
   raw = parser.from_file(filepath)
   toc = list(filter(None, raw['content'].split('\n')))
   toc_clean = [i.replace(' .', '') for i in toc]
@@ -45,9 +51,17 @@ def extract_toc_list_from_pdf(filepath):
     else:
       correct_list.append(toc_only[i])
     i += 1
+
+  if debug == False:
+    if os.path.exists(filepath):
+      os.remove(filepath)
+    else:
+      print('Warning: file_toc.pdf not deleted.')
   return correct_list
 
 def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
+  start_toc -= 1
+  offset -= 2
   writer = PdfFileWriter()
   with open(filepath, 'rb') as in_pdf:
     reader = PdfFileReader(in_pdf)
@@ -61,6 +75,9 @@ def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
     shift = 0
     for line in toc:
       level = line.split(' ', 1)[0].count('.')
+      # Special case of header chapters with format (e.g. 4.)
+      if line.split(' ', 1)[0][-1] == '.':
+        level -= 1
       name, page_num_original = line.rsplit(' ', 1)
       page_num = offset + int(page_num_original) - shift * chapter_offset
       # page_num = offset + int(page_num)
@@ -85,6 +102,22 @@ def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
     with open('./out.pdf', 'wb') as out_pdf:
       writer.write(out_pdf)
 
+def get_page_num(filepath, page_num):
+  with pdfplumber.open(filepath) as f:
+    page_range = 0
+    page_list = f.pages[page_num-page_range:page_num+1+page_range]
+    text = ''
+    for page in page_list:
+      text = ' '.join((text, page.extract_text()))
+    print(re.findall(r' \d+\n', text))
+    return text
+
+
+# %%
+
+text = get_page_num('../../example_pdf/DiscontinuousGalerkin.pdf', 31)
+
+
 # %%
 
 # outpath = generate_toc_pdf('./LEVEQUE_EXTENDED.pdf', 8, 15)
@@ -98,6 +131,10 @@ def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
 # outpath = generate_toc_pdf('./DiscontinuousGalerkin.pdf', 10-1, 13-1)
 # toc = extract_toc_list_from_pdf(outpath)
 # write_new_pdf_toc('./DiscontinuousGalerkin.pdf', toc, 10-1, 14-2, 1)
+
+outpath = generate_toc_pdf('../../example_pdf/bayesian_data.pdf', 10, 13)
+toc = extract_toc_list_from_pdf(outpath)
+write_new_pdf_toc('../../example_pdf/bayesian_data.pdf', toc, 10, 14, 0)
 #%%
 
 @click.command()
@@ -106,12 +143,13 @@ def write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset):
 @click.option('-e', '--end_toc', required=True, help='Page number of pdf for the last page of the table of contents.', type=int)
 @click.option('-o', '--offset', required=True, help='Offset for pdf. Defined as pdf page number of first chapter.',  type=int)
 @click.option('-c', '--chapter_offset', default=0, help='Certain pdfs have additional offsets at each chapter. (EXPERIMENTAL)', type=int)
-def toc_pdf(file, start_toc, end_toc, offset, chapter_offset):
+@click.option('-d', '--debug', default=False, help="Outputs separate pdf file (filename_toc.pdf) containing the pages provided for the table of contents. (used for debugging)")
+def toc_pdf(file, start_toc, end_toc, offset, chapter_offset, debug):
   """Creates a new pdf called out.pdf with an outline generated from the table of contents."""
   filepath = './' + file
-  outpath = generate_toc_pdf(filepath, start_toc-1, end_toc-1)  
-  toc = extract_toc_list_from_pdf(outpath)
-  write_new_pdf_toc(filepath, toc, start_toc-1, offset-2, chapter_offset)
+  outpath = generate_toc_pdf(filepath, start_toc, end_toc)  
+  toc = extract_toc_list_from_pdf(outpath, debug)
+  write_new_pdf_toc(filepath, toc, start_toc, offset, chapter_offset)
 
 
 if __name__ == '__main__':
