@@ -9,6 +9,7 @@ This command line tools aims at resolving this by automatically generating the m
   - [Usage](#usage)
     - [Example](#example)
   - [Known issues](#known-issues)
+  - [Alternative software](#alternative-software)
   - [Upcoming features](#upcoming-features)
 
 ## Installation
@@ -42,8 +43,6 @@ This usually corresponds to the first chapter of the book.
 
 ![usage](img/usage.png)
 
-
-
 ### Example
 Here is an example command:
 ```shell
@@ -61,7 +60,10 @@ This will generate two PDFs: example_toc.pdf and out.pdf. The former is a auxili
 2. tocPDF assumes that the way that subchapters are defined is using a dot separator (e.g. 4.3). Under the hood, tocPDF counts the number of dots in the string to determine the hiarchy. If the PDF does not follow this convention, tocPDF will fail to identify the correct outline. Note that this only affects the hiearchy while the bookmark locations might still be correct.
 
 The code is still in early development so please feel free to open an issue if you find any additional bugs or features that you would like to be added.
-In case the generated outline is slightly off, I recommend using the [jpdfbookmarks](https://github.com/SemanticBeeng/jpdfbookmarks) which is a nice piece of free software for manually editing bookmarks for PDFs.
+
+
+## Alternative software
+In case the generated outline is slightly off, I recommend using the [jpdfbookmarks](https://github.com/SemanticBeeng/jpdfbookmarks) (can be directly donwloaded from [sourceforge](https://sourceforge.net/projects/jpdfbookmarks/)) which is a nice piece of free software for manually editing bookmarks for PDFs.
 
 ## Upcoming features
 - Fix the first issue mentioned here above
