@@ -7,9 +7,10 @@ import pdfplumber
 import os
 from tqdm import tqdm
 from typing import Optional, List
+import itertools
 
 def generate_toc_pdf(filepath: str, start_toc: int, end_toc: int) -> str:
-  """Creates tmp_toc.pdf containing only toc pages or original pdf."""
+  """Creates tmp_toc.pdf containing only toc pages of original pdf."""
   # change numbering from math to programming
   start_toc -= 1
   end_toc -= 1
@@ -37,13 +38,38 @@ def filter_chapter(line: str) -> bool:
   else:
     return True
 
-def extract_toc_list_from_pdf(filepath: str, debug: Optional[bool] =False) -> List[str]:
+def read_toc(filepath: str, method: Optional[str] = 'pdfplumber') -> List['str']:
+  """Generates a list of the table of contents using a parser method. """
+  toc = ''
+  if method == 'pdfplumber':
+    with pdfplumber.open('tmp_toc.pdf') as f:
+      # produces list of lists (each corresponding to a page)
+      toc = [page.extract_text().split('\n') for page in f.pages]
+      # concat lists together
+      toc = list(itertools.chain.from_iterable(toc))
+  elif method == 'tika':
+    raw = parser.from_file(filepath)
+    toc = list(filter(None, raw['content'].split('\n')))
+  else:
+    raise Exception('Unkown method used for converting toc to list!')
+    
+  print(f'Used {method} for converting table of content to list.')
+  # Cleaning up toc
+  toc_clean = [re.sub(r'(\.){2,}| \.| ·|', '', i) for i in toc]
+  toc_clean = [re.sub(r'(\w)\.(?!\S)', r'\1', i)for i in toc_clean]
+  toc_clean = [re.sub(r' +', r' ', i)for i in toc_clean]
+  toc_clean = [re.sub(r' $', r'', i)for i in toc_clean]
+  toc_only = list(filter(filter_chapter, toc_clean))
+  return toc_only
+
+# TODO:
+# Does not support format Chapter 3 ..... 12 (LEVEQUE 1990) (use tabula?)
+# Does not support inenting instead of 1.1 (Numerical Computing)
+# Make Annex new parent chapter
+def extract_toc_list_from_pdf(filepath: str, extraction_method: Optional[str] = 'tika', debug: Optional[bool] =False,) -> List[str]:
   """Extract list of toc (chapter name + page number) contained in tmp_toc.pdf"""
   # Extract text from tmp_toc.pdf, reformat and filter relevant lines
-  raw = parser.from_file(filepath)
-  toc = list(filter(None, raw['content'].split('\n')))
-  toc_clean = [i.replace(' .', '') for i in toc]
-  toc_only = list(filter(filter_chapter, toc_clean))
+  toc_only = read_toc(filepath, extraction_method)
 
   # -begin: join multilined chapters into 1-
   correct_list = []
@@ -74,7 +100,7 @@ def extract_toc_list_from_pdf(filepath: str, debug: Optional[bool] =False) -> Li
       print('Warning: tmp_toc.pdf not deleted.')
   return correct_list
 
-def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int, missing_pages: bool, reader_pdf_file=None, chapter_offset: Optional[int]=0):
+def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int, missing_pages: str, reader_pdf_file=None, chapter_offset: Optional[int]=0):
   """Generates out.pdf containing new outlined pdf."""
   if reader_pdf_file is None:
     raise Exception('pdfplumber.open() file must be provided as 6th argument')
@@ -93,12 +119,11 @@ def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int
     # start loop over toc
     for line in tqdm(toc):
       # compute level of chapter using number of '.' in numbering (assumes format e.g. 4.2)
-      level = line.split(' ', 1)[0].count('.')
+      level = line.split(maxsplit=1)[0].count('.')
       # Special case of header chapters with format (e.g. 4.)
       if line.split(' ', 1)[0][-1] == '.':
         level -= 1
-    
-      name, page_num_original = line.rsplit(' ', 1)
+      name, page_num_original = line.rsplit(maxsplit=1)
       page_num = offset + int(page_num_original)
 
       if page_num >= num_pages:
@@ -151,7 +176,7 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
     pass
   else:
     # check 4 subsequent to check if compute current page number
-    page_range = 4
+    page_range = 10
     pages = pdfplumber_reader.pages[page_num+1:page_num+page_range]
     book_numbers = [page_number]
     for page in pages:
@@ -165,60 +190,83 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
 
       book_numbers.append(found_number)
 
-    # determine current page number by finding sequence in the following pages (e.g. book_number = [2, 13, 14, 15] -> page_num = 12)
-    for i in range(len(book_numbers)-1):
-      if book_numbers[i] + 1 == book_numbers[i+1]:
+    # determine current page number by looking for consistent sequence in the following pages (e.g. book_numbers = [2, 13, 14, 15] -> page_num = 12)
+    # print(book_numbers)
+    count = 0 # number of consistent numbers in book_numbers
+    for i in range(len(book_numbers)-2):
+      for j in range(i+1, len(book_numbers)):
+        if book_numbers[i] == book_numbers[j] - (j-i):
+          count += 1
+      
+      # at least 2 consistent numbers need to be found for page num to be determined
+      if count > 1:
         page_number = book_numbers[i] - i
         # recompute offset for mismatch in page numbers
         additional_offset = expected_page - page_number
         break
+      count = 0
 
-  # print(f'returned pdf page = {page_number}')
   if page_number == -1:
     print(f'Warning: automatic detection of offset failed for page {expected_page}')
 
   return offset + additional_offset
 
-
 # %%
 
-# outpath = generate_toc_pdf('./LEVEQUE_EXTENDED.pdf', 8, 15)
-# toc = extract_toc_list_from_pdf(outpath)
-# write_new_pdf_toc(toc, 8, 19)
+# === Relativistic Quantum Chemistr ===
+# filepath = '/Users/kalmanszenes/code/tocPDF-package/example_pdf/Relativistic_Quantum_Chemistry.pdf'
+# outpath = generate_toc_pdf(filepath, 6, 18)
+# toc = extract_toc_list_from_pdf(outpath, debug=True, extraction_method='tika')
+# print(f'Opening {filepath} with pdfplumber')
+# with pdfplumber.open(filepath) as file_reader:
+#   print(f'PDF successfully opened.')
+#   write_new_pdf_toc(filepath, toc, 6, 24, True, file_reader)
+# === End ===
 
-filepath = '/Users/kalmanszenes/code/tocPDF-package/example_pdf/Relativistic_Quantum_Chemistry.pdf'
-outpath = generate_toc_pdf(filepath, 6, 18)
-toc = extract_toc_list_from_pdf(outpath)
+# === Leveque 1990 ===
+filepath = '/Users/kalmanszenes/My Drive/Textbooks/pdf_toc/LEVEQUE1990_Book_NumericalMethodsForConservatio.pdf'
+outpath = generate_toc_pdf(filepath, 5, 8)
+toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber',debug=True)
 print(f'Opening {filepath} with pdfplumber')
 with pdfplumber.open(filepath) as file_reader:
   print(f'PDF successfully opened.')
-  write_new_pdf_toc(filepath, toc, 6, 24, True, file_reader)
+  write_new_pdf_toc(filepath, toc, 6, 10, True, file_reader)
+# === End ===
 
-
-# outpath = generate_toc_pdf('/Users/kalmanszenes/code/tocPDF-package/example_pdf/DiscontinuousGalerkin.pdf', 10, 13)
-# toc = extract_toc_list_from_pdf(outpath)
-# with pdfplumber.open('/Users/kalmanszenes/code/tocPDF-package/example_pdf/DiscontinuousGalerkin.pdf') as file_reader:
+# # === Discontinuous Galerkin ===
+# filepath = '/Users/kalmanszenes/code/tocPDF-package/example_pdf/DiscontinuousGalerkin.pdf'
+# outpath = generate_toc_pdf(filepath, 10, 13)
+# toc = extract_toc_list_from_pdf(outpath, extraction_method='tika', debug=True)
+# with pdfplumber.open(filepath) as file_reader:
 #   print(f'pdfplumber opened file')
-#   write_new_pdf_toc(/Users/kalmanszenes/code/tocPDF-package/example_pdf/DiscontinuousGalerkin.pdf, toc, 10, 14, 1, file_reader)
+#   write_new_pdf_toc(filepath, toc, 10, 14, 1, file_reader)
+# === End===
 
-# outpath = generate_toc_pdf('../../example_pdf/bayesian_data.pdf', 10, 13)
-# toc = extract_toc_list_from_pdf(outpath)
-# write_new_pdf_toc('../../example_pdf/bayesian_data.pdf', toc, 10, 14, 0)
+# === Bayesian ===
+# filepath = '/Users/kalmanszenes/My Drive/Textbooks/bayesian_data.pdf'
+# outpath = generate_toc_pdf(filepath, 10, 13)
+# toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber', debug=True)
+# with pdfplumber.open(filepath) as file_reader:
+#   print(f'pdfplumber opened file')
+#   write_new_pdf_toc(filepath, toc, 10, 14, 1, file_reader)
+# === End ===
 #%%
-
-@click.command()
-@click.option('-f', '--file', required=True, help='Filename of pdf.')
-@click.option('-s', '--start_toc', required=True, help='Page number of pdf for the first page of the table of contents.', type=int)
-@click.option('-e', '--end_toc', required=True, help='Page number of pdf for the last page of the table of contents.', type=int)
-@click.option('-o', '--offset', required=True, help='Offset for pdf. Defined as pdf page number of first chapter.',  type=int)
-@click.option('-m', '--missing_pages', default=False, help='inconsistent chaptering')
-@click.option('-c', '--chapter_offset', default=0, help='Certain pdfs have additional offsets at each chapter. (EXPERIMENTAL)', type=int)
-@click.option('-d', '--debug', default=False, help="Outputs separate pdf file (filename_toc.pdf) containing the pages provided for the table of contents. (used for debugging)")
-def toc_pdf(file, start_toc, end_toc, offset, missing_pages, chapter_offset, debug):
-  """Creates a new pdf called out.pdf with an outline generated from the table of contents."""
-  filepath = './' + file
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.argument('filename')
+@click.option('-s', '--start_toc', required=True, help='Page number of pdf for the first page of the table of contents.', type=int, prompt='Enter pdf page corresponding to FIRST page of table of contents')
+@click.option('-e', '--end_toc', required=True, help='Page number of pdf for the last page of the table of contents.', type=int, prompt='Enter pdf page corresponding to LAST page of table of contents')
+@click.option('-o', '--offset', required=True, help='Offset for pdf. Defined as pdf page number of first chapter.',  type=int, prompt='Enter pdf page corresponding to first arabic numeral (usually first chapter)')
+@click.option('-m', '--missing_pages', default=None, help='(EXPERIMENTAL) tika [default] or pdfplumber', show_default=True)
+@click.option('-c', '--chapter_offset', default=0, help='Certain pdfs have additional offsets at each chapter. (EXPERIMENTAL)', type=int, show_default=True)
+@click.option('-d', '--debug', default=False, help="Outputs separate pdf file (filename_toc.pdf) containing the pages provided for the table of contents. (used for debugging)", show_default=True)
+def toc_pdf(filename, start_toc, end_toc, offset, missing_pages, chapter_offset, debug):
+  """Creates a new pdf called out.pdf with an outline generated from the table of contents.
+  
+  FILENAME is the pdf file to be outlined."""
+  filepath = './' + filename
   outpath = generate_toc_pdf(filepath, start_toc, end_toc)  
-  toc = extract_toc_list_from_pdf(outpath, debug)
+  toc = extract_toc_list_from_pdf(outpath, missing_pages, debug)
   with pdfplumber.open(filepath) as file_reader:
     write_new_pdf_toc(filepath, toc, start_toc, offset, missing_pages, file_reader) 
 
