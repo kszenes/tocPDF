@@ -213,6 +213,8 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
 
 # %%
 
+### --- Test Examples --- 
+
 # === Relativistic Quantum Chemistr ===
 # filepath = '/Users/kalmanszenes/code/tocPDF-package/example_pdf/Relativistic_Quantum_Chemistry.pdf'
 # outpath = generate_toc_pdf(filepath, 6, 18)
@@ -224,13 +226,13 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
 # === End ===
 
 # === Leveque 1990 ===
-filepath = '/Users/kalmanszenes/My Drive/Textbooks/pdf_toc/LEVEQUE1990_Book_NumericalMethodsForConservatio.pdf'
-outpath = generate_toc_pdf(filepath, 5, 8)
-toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber',debug=True)
-print(f'Opening {filepath} with pdfplumber')
-with pdfplumber.open(filepath) as file_reader:
-  print(f'PDF successfully opened.')
-  write_new_pdf_toc(filepath, toc, 6, 10, True, file_reader)
+# filepath = '/Users/kalmanszenes/My Drive/Textbooks/pdf_toc/LEVEQUE1990_Book_NumericalMethodsForConservatio.pdf'
+# outpath = generate_toc_pdf(filepath, 5, 8)
+# toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber',debug=True)
+# print(f'Opening {filepath} with pdfplumber')
+# with pdfplumber.open(filepath) as file_reader:
+#   print(f'PDF successfully opened.')
+#   write_new_pdf_toc(filepath, toc, 6, 10, True, file_reader)
 # === End ===
 
 # # === Discontinuous Galerkin ===
@@ -274,10 +276,3 @@ def toc_pdf(filename, start_toc, end_toc, offset, missing_pages, chapter_offset,
 if __name__ == '__main__':
   toc_pdf()
 
-
-# %%
-
-  
-
-
-# %%
