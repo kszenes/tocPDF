@@ -2,17 +2,17 @@
 This project was created due to the lack of outlines included with most digital PDFs of textbooks.
 This command line tools aims at resolving this by automatically generating the missing outline based on the table of contents.
 
-## Table of contents
-- [tocPDF](#tocpdf)
-  - [Table of contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Usage](#usage)
-    - [Example](#example)
-  - [Known issues](#known-issues)
-  - [Alternative software](#alternative-software)
-  - [Upcoming features](#upcoming-features)
+## Table of Contents
+- [Installation](#installation)
+- [Inconsistent Offset](#inconsistent-offset)
+- [Usage](#usage)
+  - [Example](#example)
+- [Supported Formats](#supported-formats)
+- [Alternative software](#alternative-software)
 
 ## Installation
+
+### Manual (Most Updated)
 The most updated version can be downloaded by cloning the repository:
 
 ```shell
@@ -27,45 +27,39 @@ pip3 install .
 
 This will fetch all the necessary dependencies for running the program as well as install the command line tool.
 
-The program is also packaged on PyPI but the version is very outdated. (Will be updated soon)
+### PyPI (Outdated)
+An outdated version has also been packaged on PyPI, however it is lacking a lot of the newer features (like `--missing_pages`). An updated version will be uploaded soon.
 
 ```shell
 pip3 install tocPDF
 ```
+## Inconsistent Offset
+The main difficulty with automatically generating outlines for PDFs stems from the fact that the PDF page numbers (displayed by your PDF viewer) do not match the page numbers of the book that you are trying to outline. In addition, certain PDFs will be missing some pages (usually between root chapters) compared to the book. This means that the page difference between the book and the PDF is not consistent throughout the document and needs to be recomputed between chapters. tocPDF can automatically recompute this offset by comparing the expected page number to the one found in the book.
 
 
 ## Usage
-The program must be provided with the path to the PDF file that you wish to bookmark as well as the first and last page of the table of contents in the book.
-These pages will be read by the program to generate the outline.
-Finally, the offset must be provided.
-The offset is defined as the PDF page number of the first page of the book numbered using arabic numerals (e.g. 1, 2, 3...).
-This usually corresponds to the first chapter of the book (excluding the Preface).
+This program requires 3 input parameters: the first and last PDF page of the table of contents as well as the PDF-book page offset. The offset is defined as the PDF page corresponding to the first book page with arabic numerals (usually the first chapter). If your book has missing pages in between chapter, add the flag `--missing_pages` followed by either tika or pdfplumber. This will determine the parser used to make sure that the PDF-book page offset is still correct. Note that this option will make the outline creation much more robust however the execution time will be a bit slower. If your PDF is not missing any pages you can ommit this flag.
 
 ![usage](img/usage.png)
 
 ### Example
-Here is an example command:
+The following command generates the correct outlined PDF for the example document that I have linked to the repository:
 ```shell
-tocPDF -file example.pdf -start_toc 8 -end_toc 14 -offset 21
+tocPDF -start_toc 3 -end_toc 5 -offset 9 -missing_pages tika example.pdf
 ```
 Equivalently:
 
 ```shell
-tocPDF -f example.pdf -s 8 -e 14 -o 21
+tocPDF -s 3 -e 5 -o 9 -m tika example.df
 ```
-This will generate two PDFs: example_toc.pdf and out.pdf. The former is a auxiliary file that is used for debugging. If you encounter an issue, make sure to verify that this file only contains the pages corresponding to the table of contents in the PDF. The latter is the original PDF with the added outline.
+This will generate a new outlined PDF with the name out.pdf.
 
-## Known issues
-1. Some PDFs contain missing pages usually between the root chapters. If it is consistently the same number of pages (e.g. 1 or 2) this can be specified using the optionnal argument -chapter_offset.
-2. tocPDF assumes that the way that subchapters is defined using a dot separator (e.g. Chapter 4: Subchapter 3 is 4.3). Under the hood, tocPDF counts the number of dots in the string to determine the hierarchy. If the PDF does not follow this convention, tocPDF will fail to identify the correct outline. Note that this only affects the outline hierarchy while the bookmark locations might still be correct.
+## Supported Formats
 
-The code is in early development so please feel free to open an issue if you find any additional bugs or features that you would like to be added.
+The format for table of contents varies from document to document and I can not guarantee that tocPDF will work perfectly. I have tested it out on a dozen documents and it produces decent results. Make sure to run with both parsers (`-m tika` and `-m pdfplumber`) and compare results. If you have encountered any bugs or found any unsupported table of content formats, feel free to open an issue.
 
-## Alternative software
+## Alternative Software
 In case the generated outline is slightly off, I recommend using the [jpdfbookmarks](https://github.com/SemanticBeeng/jpdfbookmarks) (can be directly donwloaded from [sourceforge](https://sourceforge.net/projects/jpdfbookmarks/)) which is a nice piece of free software for manually editing bookmarks for PDFs.
 
-## Upcoming features
-- Fix the first issue mentioned here above.
-- Provide option to automatically delete temporary table of contents PDF copy generated.
 
 
