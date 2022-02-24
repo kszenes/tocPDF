@@ -1,3 +1,0 @@
-[console_scripts]
-tocPDF = tocPDF.pdf_py:toc_pdf
-

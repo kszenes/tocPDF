@@ -259,12 +259,13 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-s', '--start_toc', required=True, help='PDF page number of FIRST page of Table of Contents.', type=int, prompt='Enter pdf page corresponding to FIRST page of table of contents')
 @click.option('-e', '--end_toc', required=True, help='PDF page number of LAST page of Table of Contents.', type=int, prompt='Enter pdf page corresponding to LAST page of table of contents')
 @click.option('-o', '--offset', required=True, help='Global page offset, defined as PDF page number of first page with arabic numerals.',  type=int, prompt='Enter PDF page of page 1 numbered with arabic numerals. (corresponds usually to first chapter)')
-@click.option('-m', '--missing_pages', default=None, help='Parser used to automatically detect offset by verifying book page number matches expected PDF page.', show_default=True)
-@click.option('-d', '--debug', is_flag=True, default=False, help="Outputs PDF file (tmp_toc.pdf) containing the pages provided for the table of contents.", show_default=True)
-def toc_pdf(filename, start_toc, end_toc, offset, missing_pages, debug):
+@click.option('-m', '--missing_pages', default=None, help='Parser (tika or pdfplumber) used to automatically detect offset by verifying book page number matches expected PDF page.', show_default=True)
+@click.option('-d', '--debug', is_flag=True, default=False, help="Outputs PDF file (tmp_toc.pdf) containing the pages provided for the table of contents.")
+def tocPDF(filename, start_toc, end_toc, offset, missing_pages, debug):
   """Generates outlined PDF based on the Table of Contents.
+  Version: 0.1
   
-  Example: tocPDF -s 10 -e 13 -e 15 example.pdf"""
+  Example: tocPDF -s 3 -e 5 -e 9 -m tika example.pdf"""
   filepath = './' + filename
   outpath = generate_toc_pdf(filepath, start_toc, end_toc)  
   toc = extract_toc_list_from_pdf(outpath, missing_pages, debug)
@@ -273,5 +274,5 @@ def toc_pdf(filename, start_toc, end_toc, offset, missing_pages, debug):
 
 
 if __name__ == '__main__':
-  toc_pdf()
+  tocPDF()
 
