@@ -13,13 +13,7 @@ This command line tools aims at resolving this by automatically generating the m
   - [Upcoming features](#upcoming-features)
 
 ## Installation
-The program is packaged on PyPI and can be installed using pip:
-
-```shell
-pip3 install tocPDF
-```
-
-Alternatively, first clone the repository:
+The most updated version can be downloaded by cloning the repository:
 
 ```shell
 git clone https://github.com/kszenes/tocPDF.git
@@ -32,6 +26,12 @@ pip3 install .
 ```
 
 This will fetch all the necessary dependencies for running the program as well as install the command line tool.
+
+The program is also packaged on PyPI but the version is very outdated. (Will be updated soon)
+
+```shell
+pip3 install tocPDF
+```
 
 
 ## Usage
