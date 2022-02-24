@@ -1,9 +1,13 @@
-example_pdf
 *.pdf
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# tex
+example_pdf/lorem_ipsum/*
+!example_pdf/example.pdf
+
 
 # C extensions
 *.so

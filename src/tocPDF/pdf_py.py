@@ -100,7 +100,7 @@ def extract_toc_list_from_pdf(filepath: str, extraction_method: Optional[str] = 
       print('Warning: tmp_toc.pdf not deleted.')
   return correct_list
 
-def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int, missing_pages: str, reader_pdf_file=None, chapter_offset: Optional[int]=0):
+def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int, missing_pages: str, reader_pdf_file=None):
   """Generates out.pdf containing new outlined pdf."""
   if reader_pdf_file is None:
     raise Exception('pdfplumber.open() file must be provided as 6th argument')
@@ -224,13 +224,13 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
 # === End ===
 
 # === Leveque 1990 ===
-filepath = '/Users/kalmanszenes/My Drive/Textbooks/pdf_toc/LEVEQUE1990_Book_NumericalMethodsForConservatio.pdf'
-outpath = generate_toc_pdf(filepath, 5, 8)
-toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber',debug=True)
-print(f'Opening {filepath} with pdfplumber')
-with pdfplumber.open(filepath) as file_reader:
-  print(f'PDF successfully opened.')
-  write_new_pdf_toc(filepath, toc, 6, 10, True, file_reader)
+# filepath = '/Users/kalmanszenes/My Drive/Textbooks/pdf_toc/LEVEQUE1990_Book_NumericalMethodsForConservatio.pdf'
+# outpath = generate_toc_pdf(filepath, 5, 8)
+# toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber',debug=True)
+# print(f'Opening {filepath} with pdfplumber')
+# with pdfplumber.open(filepath) as file_reader:
+#   print(f'PDF successfully opened.')
+#   write_new_pdf_toc(filepath, toc, 6, 10, True, file_reader)
 # === End ===
 
 # # === Discontinuous Galerkin ===
@@ -254,16 +254,15 @@ with pdfplumber.open(filepath) as file_reader:
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('filename')
-@click.option('-s', '--start_toc', required=True, help='Page number of pdf for the first page of the table of contents.', type=int, prompt='Enter pdf page corresponding to FIRST page of table of contents')
-@click.option('-e', '--end_toc', required=True, help='Page number of pdf for the last page of the table of contents.', type=int, prompt='Enter pdf page corresponding to LAST page of table of contents')
-@click.option('-o', '--offset', required=True, help='Offset for pdf. Defined as pdf page number of first chapter.',  type=int, prompt='Enter pdf page corresponding to first arabic numeral (usually first chapter)')
-@click.option('-m', '--missing_pages', default=None, help='(EXPERIMENTAL) tika [default] or pdfplumber', show_default=True)
-@click.option('-c', '--chapter_offset', default=0, help='Certain pdfs have additional offsets at each chapter. (EXPERIMENTAL)', type=int, show_default=True)
-@click.option('-d', '--debug', default=False, help="Outputs separate pdf file (filename_toc.pdf) containing the pages provided for the table of contents. (used for debugging)", show_default=True)
-def toc_pdf(filename, start_toc, end_toc, offset, missing_pages, chapter_offset, debug):
-  """Creates a new pdf called out.pdf with an outline generated from the table of contents.
+@click.option('-s', '--start_toc', required=True, help='PDF page number of FIRST page of Table of Contents.', type=int, prompt='Enter pdf page corresponding to FIRST page of table of contents')
+@click.option('-e', '--end_toc', required=True, help='PDF page number of LAST page of Table of Contents.', type=int, prompt='Enter pdf page corresponding to LAST page of table of contents')
+@click.option('-o', '--offset', required=True, help='Global page offset, defined as PDF page number of first page with arabic numerals.',  type=int, prompt='Enter PDF page of page 1 numbered with arabic numerals. (corresponds usually to first chapter)')
+@click.option('-m', '--missing_pages', default=None, help='Parser used to automatically detect offset by verifying book page number matches expected PDF page.', show_default=True)
+@click.option('-d', '--debug', is_flag=True, default=False, help="Outputs PDF file (tmp_toc.pdf) containing the pages provided for the table of contents.", show_default=True)
+def toc_pdf(filename, start_toc, end_toc, offset, missing_pages, debug):
+  """Generates outlined PDF based on the Table of Contents.
   
-  FILENAME is the pdf file to be outlined."""
+  Example: tocPDF -s 10 -e 13 -e 15 example.pdf"""
   filepath = './' + filename
   outpath = generate_toc_pdf(filepath, start_toc, end_toc)  
   toc = extract_toc_list_from_pdf(outpath, missing_pages, debug)
