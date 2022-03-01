@@ -41,7 +41,7 @@ def filter_chapter(line: str) -> bool:
 def read_toc(filepath: str, method: Optional[str] = 'pdfplumber') -> List['str']:
   """Generates a list of the table of contents using a parser method. """
   toc = ''
-  if method == 'pdfplumber':
+  if method == 'pdfplumber' or method is None:
     with pdfplumber.open('tmp_toc.pdf') as f:
       # produces list of lists (each corresponding to a page)
       toc = [page.extract_text().split('\n') for page in f.pages]
