@@ -1,6 +1,32 @@
 [build-system]
-requires = [
-  "setuptools>=54",
-  "wheel"
-]
+requires = ["setuptools>=54", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "tocPDF"
+version = "0.2"
+dependencies = [
+  "PyPDF2",
+  "tika",
+  "click",
+  "pdfplumber",
+  "tqdm"
+]
+authors = [
+  {name = "Kalman Szenes", email =  "szenes.kalman@gmail.com"}
+]
+description = "A bookmark generator for pdf"
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent"
+]
+
+[project.urls]
+Repository = "https://github.com/kszenes/tocPDF"
+
+[project.scripts]
+tocPDF = "tocPDF.tocPDF:tocPDF"
+
