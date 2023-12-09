@@ -49,9 +49,9 @@ This program requires 3 input parameters: the first and last PDF page of the tab
 ```sh
 Usage: tocPDF [OPTIONS] FILENAME
 
-  Generates outlined PDF based on the Table of Contents. Version: 0.1
+  Generates outlined PDF based on the Table of Contents. Version: 0.3.1
 
-  Example: tocPDF -s 3 -e 5 -o 9 -m tika example.pdf
+  Example: tocPDF example.pdf
 
 Options:
   -s, --start_toc INTEGER   PDF page number of FIRST page of Table of
@@ -70,12 +70,16 @@ Options:
 
 
 ### Example
-The following command generates the correct outlined PDF for the example document that I have linked to the repository:
+The CLI can be simply invoked with the PDF as parameter:
 ```shell
-tocPDF -start_toc 3 -end_toc 5 -offset 9 -missing_pages tika example.pdf
+tocPDF example.pdf
 ```
-Equivalently:
-
+and then the user will be prompted to add the start/end pages of the PDF as well as the offset to the first page of the PDF.
+These parameters can be directly provided as arguments to the CLI. For instance, the following command generates the correct outlined PDF for the example document found in `example_pdf/example.pdf`:
+```shell
+tocPDF --start_toc 3 --end_toc 5 --offset 9 --missing_pages tika example.pdf
+```
+Or equivalently:
 ```shell
 tocPDF -s 3 -e 5 -o 9 -m tika example.df
 ```
