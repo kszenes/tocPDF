@@ -1,5 +1,5 @@
 #%%
-from PyPDF2 import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfWriter, PdfReader
 import re
 from tika import parser
 import click
@@ -16,12 +16,12 @@ def generate_toc_pdf(filepath: str, start_toc: int, end_toc: int) -> str:
   end_toc -= 1
 
   # extract toc pages
-  writer = PdfFileWriter()
+  writer = PdfWriter()
   with open(filepath, 'rb') as in_pdf:
-    reader = PdfFileReader(in_pdf)
+    reader = PdfReader(in_pdf)
     for i in range(start_toc, end_toc+1):
-      page = reader.getPage(i)
-      writer.addPage(page)
+      page = reader.pages[i]
+      writer.add_page(page)
     
     outpath = "tmp_toc.pdf"
     with open(outpath, 'wb') as out_pdf:
@@ -108,13 +108,13 @@ def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int
   start_toc -= 1
   offset -= 2
 
-  writer = PdfFileWriter()
+  writer = PdfWriter()
   with open(filepath, 'rb') as in_pdf:
-    reader = PdfFileReader(in_pdf)
-    num_pages = reader.numPages
-    writer.appendPagesFromReader(reader)
+    reader = PdfReader(in_pdf)
+    num_pages = len(reader.pages)
+    writer.append_pages_from_reader(reader)
     hierarchy = [None] * 10 # assume hierarchy does not have more than 10 levels
-    writer.addBookmark('Table of Contents', start_toc)
+    writer.add_outline_item('Table of Contents', start_toc)
 
     # start loop over toc
     for line in tqdm(toc):
@@ -132,7 +132,7 @@ def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int
 
       if 'Exercise' in name:
         # exercises usually go under the parent 
-        writer.addBookmark(name, page_num, parent=hierarchy[0])
+        writer.add_outline_item(name, page_num, parent=hierarchy[0])
       elif 'Part' in name:
         # skip Part I, II lines
         continue
@@ -145,9 +145,9 @@ def write_new_pdf_toc(filepath: str, toc: List[str], start_toc: int, offset: int
 
         # add boorkmarks
         if level == 0:
-            hierarchy[level] = writer.addBookmark(name, page_num)
+            hierarchy[level] = writer.add_outline_item(name, page_num)
         else:
-          hierarchy[level] = writer.addBookmark(
+          hierarchy[level] = writer.add_outline_item(
                 name, page_num, parent=hierarchy[level-1])
 
     # write out.pdf file
