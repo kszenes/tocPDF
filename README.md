@@ -21,7 +21,7 @@ This command line tools aims at resolving this by automatically generating the m
 The package can be downloaded using pip:
 
 ```shell
-pip3 install tocPDF
+pip install tocPDF
 ```
 
 ### Manually
@@ -34,7 +34,7 @@ git clone https://github.com/kszenes/tocPDF.git
 Then navigate into the base directory (toc-pdf-package) of the project and install the package using pip:
 
 ```shell
-pip3 install .
+pip install .
 ```
 
 This will fetch all the necessary dependencies for running the program as well as install the command line tool.

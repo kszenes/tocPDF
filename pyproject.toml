@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tocPDF"
-version = "0.2"
+version = "0.3"
 dependencies = [
   "PyPDF2",
   "tika",
@@ -28,4 +28,7 @@ Repository = "https://github.com/kszenes/tocPDF"
 
 [project.scripts]
 tocPDF = "tocPDF.tocPDF:tocPDF"
+
+[tools.dist.bdist_wheel]
+universal = true
 
