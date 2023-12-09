@@ -75,6 +75,7 @@ The CLI can be simply invoked with the PDF as parameter:
 tocPDF example.pdf
 ```
 and then the user will be prompted to add the start/end pages of the PDF as well as the offset to the first page of the PDF.
+
 These parameters can be directly provided as arguments to the CLI. For instance, the following command generates the correct outlined PDF for the example document found in `example_pdf/example.pdf`:
 ```shell
 tocPDF --start_toc 3 --end_toc 5 --offset 9 --missing_pages tika example.pdf
