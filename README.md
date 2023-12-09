@@ -46,7 +46,28 @@ The main difficulty with automatically generating outlines for PDFs stems from t
 ## Usage
 This program requires 3 input parameters: the first and last PDF page of the table of contents as well as the PDF-book page offset. The offset is defined as the PDF page corresponding to the first book page with Arabic numerals (usually the first chapter). If your book has missing pages in between chapter, add the flag `--missing_pages` followed by either tika or pdfplumber. This will determine the parser used to make sure that the PDF-book page offset is still correct. Note that this option will make the outline creation much more robust however the execution time will be a bit slower. If your PDF is not missing any pages you can omit this flag.
 
-![usage](img/usage.png)
+```sh
+Usage: tocPDF [OPTIONS] FILENAME
+
+  Generates outlined PDF based on the Table of Contents. Version: 0.1
+
+  Example: tocPDF -s 3 -e 5 -o 9 -m tika example.pdf
+
+Options:
+  -s, --start_toc INTEGER   PDF page number of FIRST page of Table of
+                            Contents.  [required]
+  -e, --end_toc INTEGER     PDF page number of LAST page of Table of Contents.
+                            [required]
+  -o, --offset INTEGER      Global page offset, defined as PDF page number of
+                            first page with arabic numerals.  [required]
+  -m, --missing_pages TEXT  Parser (tika or pdfplumber) used to automatically
+                            detect offset by verifying book page number
+                            matches expected PDF page.
+  -d, --debug               Outputs PDF file (tmp_toc.pdf) containing the
+                            pages provided for the table of contents.
+  -h, --help                Show this message and exit.
+```
+
 
 ### Example
 The following command generates the correct outlined PDF for the example document that I have linked to the repository:

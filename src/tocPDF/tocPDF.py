@@ -265,7 +265,7 @@ def tocPDF(filename, start_toc, end_toc, offset, missing_pages, debug):
   """Generates outlined PDF based on the Table of Contents.
   Version: 0.1
   
-  Example: tocPDF -s 3 -e 5 -e 9 -m tika example.pdf"""
+  Example: tocPDF -s 3 -e 5 -o 9 -m tika example.pdf"""
   filepath = './' + filename
   outpath = generate_toc_pdf(filepath, start_toc, end_toc)  
   toc = extract_toc_list_from_pdf(outpath, missing_pages, debug)
