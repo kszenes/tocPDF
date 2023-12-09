@@ -1,5 +1,5 @@
 #%%
-from PyPDF2 import PdfWriter, PdfReader
+from pypdf import PdfWriter, PdfReader
 import re
 from tika import parser
 import click
@@ -165,7 +165,7 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
   # extract page number from first line of pdf at corresponding page
   page = pdfplumber_reader.pages[page_num]
   line_list = page.extract_text().split('\n')
-  found_number = re.findall('^\d+|\d+$', line_list[0]) # number at beginning or end of line
+  found_number = re.findall(r'^\d+|\d+$', line_list[0]) # number at beginning or end of line
 
   # if number found convert to int
   if found_number:

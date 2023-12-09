@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tocPDF"
-version = "0.3"
+version = "0.3.1"
 dependencies = [
-  "PyPDF2",
+  "pypdf",
   "tika",
   "click",
   "pdfplumber",
