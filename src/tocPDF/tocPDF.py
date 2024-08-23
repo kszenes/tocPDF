@@ -50,7 +50,6 @@ def read_toc(
     filepath: str, method: Optional[str] = "pdfplumber", debug: Optional[bool] = False
 ) -> List["str"]:
     """Generates a list of the table of contents using a parser method."""
-
     toc = ""
     if method == "pdfplumber" or method is None:
         with pdfplumber.open(filepath) as f:
@@ -64,7 +63,7 @@ def read_toc(
     else:
         raise Exception("Unkown method used for converting toc to list!")
 
-    print(f"Used {method} for converting table of content to list.")
+    print(f"Used {method} parser for converting table of content to list.")
     # Cleaning up toc
     toc_clean = [re.sub(r"(\.){2,}| \.| ·|", "", i) for i in toc]
     toc_clean = [re.sub(r"(\w)\.(?!\S)", r"\1", i) for i in toc_clean]
@@ -72,7 +71,7 @@ def read_toc(
     toc_clean = [re.sub(r" $", r"", i) for i in toc_clean]
     toc_only = list(filter(filter_chapter, toc_clean))
     if debug:
-        print("Printing toc only")
+        print("\n=== Input TOC ===\n")
         for item in toc_only:
             print(item + "\tpagenumber: " + item.split(" ")[-1])
     return toc_only
@@ -97,28 +96,32 @@ def extract_toc_list_from_pdf(
     while i < len(toc_only):
         # contains entire line
         complete_line_flag = re.search(r"^\d.* [A-Z].* \d+$", toc_only[i])
-        if complete_line_flag is None:
+        if not complete_line_flag:
             # check if joined with next line completes to entire line
             if i + 1 < len(toc_only):
                 # check if the next line is already complete
                 # signifies a parsing error in the current line
-                is_next_line_full = re.search(r"^\d.* [A-Z].* \d+$", toc_only[i+1])
+                is_next_line_full = re.search(r"^\d.* [A-Z].* \d+$", toc_only[i + 1])
                 if not is_next_line_full:
                     complete_line_flag = re.search(
                         r"^\d.* [A-Z].* \d+$", " ".join(toc_only[i : i + 2])
                     )
-                    if complete_line_flag is not None:
+                    if complete_line_flag:
                         # if it does append
                         correct_list.append(" ".join(toc_only[i : i + 2]))
                         i += 1
                     else:
-                        # else might be special case (e.g annexes are numbered using letters)
+                        # else might be special case (e.g., annexes are numbered using letters)
                         correct_list.append(toc_only[i])
+                else:
+                    correct_list.append(toc_only[i])
+
         else:
             correct_list.append(toc_only[i])
         i += 1
     # -end: join multilined chapters into 1-
     if debug:
+        print("\n=== Cleaned up TOC ===\n")
         for item in correct_list:
             print(item + "\tpagenumber: " + item.split(" ")[-1])
     return correct_list
@@ -179,8 +182,17 @@ def write_new_pdf_toc(
                 )
                 continue
 
-            if "Exercise" in name:
-                # exercises usually go under the parent
+            # special sections that are usually not numbered
+            special_sections = [
+                "Exercise",
+                "Acknowledgment",
+                "Reference",
+                "Appendix",
+                "Bibliography",
+            ]
+            is_special_section = re.search("^(Exercise|Acknowledgment|Reference|Appendix|Bibliography)s*", name)
+            if is_special_section:
+                # special sections usually go under the parent
                 writer.add_outline_item(name, page_num, parent=hierarchy[0])
             elif "Part" in name:
                 # skip Part I, II lines
@@ -206,26 +218,33 @@ def write_new_pdf_toc(
             writer.write(out_pdf)
 
 
+def find_page_number(page) -> int:
+    """Read the page number of a page."""
+    line_list = page.extract_text().split("\n")
+    # check first 3 text boxes for page number
+    for i in range(3):
+        found_number = re.findall(
+            r"^\d+ | \d+$", line_list[i]
+        )  # number at beginning or end of line
+        if found_number:
+            return int(found_number[0])
+
+    # page number not found
+    return -1
+
+
 def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
     """Recompute offset if pdf contains missing pages between chapters."""
     additional_offset = 0
     expected_page = page_num - offset
     page_number = -1  # move to programming standard
 
-    # extract page number from first line of pdf at corresponding page
+    # extract page number from first couple of lines of pdf at corresponding page
     page = pdfplumber_reader.pages[page_num]
-    line_list = page.extract_text().split("\n")
-    found_number = re.findall(
-        r"^\d+|\d+$", line_list[0]
-    )  # number at beginning or end of line
-
-    # if number found convert to int
-    if found_number:
-        page_number = int(found_number[0])
+    page_number = find_page_number(page)
 
     if page_number == expected_page:
         additional_offset = 0
-        pass
     else:
         # check 4 subsequent to check if compute current page number
         page_range = 10
@@ -233,17 +252,10 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
         book_numbers = [page_number]
         for page in pages:
             # extract page numbers of subsequent pages
-            line_list = page.extract_text().split("\n")
-            found_number = re.findall("^\\d+ | \\d+$", line_list[0])
-            if found_number:
-                found_number = int(found_number[0])
-            else:
-                found_number = -1
-
-            book_numbers.append(found_number)
+            page_number = find_page_number(page)
+            book_numbers.append(page_number)
 
         # determine current page number by looking for consistent sequence in the following pages (e.g. book_numbers = [2, 13, 14, 15] -> page_num = 12)
-        # print(book_numbers)
         count = 0  # number of consistent numbers in book_numbers
         for i in range(len(book_numbers) - 2):
             for j in range(i + 1, len(book_numbers)):
