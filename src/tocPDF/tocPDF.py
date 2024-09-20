@@ -4,7 +4,6 @@ import re
 from tika import parser
 import click
 import pdfplumber
-import os
 from tqdm import tqdm
 from typing import Optional, List
 import itertools
@@ -16,7 +15,7 @@ import tempfile
 
 
 def generate_toc_pdf(filepath: str, start_toc: int, end_toc: int) -> str:
-    """Creates temporary toc containing only toc pages of original pdf."""
+    """Creates temporary file containing only toc pages of original pdf."""
     # change numbering from math to programming
     start_toc -= 1
     end_toc -= 1
@@ -50,13 +49,19 @@ def read_toc(
     filepath: str, method: Optional[str] = "pdfplumber", debug: Optional[bool] = False
 ) -> List["str"]:
     """Generates a list of the table of contents using a parser method."""
-    toc = ""
+    toc = []
     if method == "pdfplumber" or method is None:
         with pdfplumber.open(filepath) as f:
             # produces list of lists (each corresponding to a page)
             toc = [page.extract_text().split("\n") for page in f.pages]
             # concat lists together
             toc = list(itertools.chain.from_iterable(toc))
+    elif method == "pypdf":
+        toc = []
+        reader = PdfReader(filepath)
+        for page in reader.pages:
+            raw = page.extract_text()
+            toc = toc + list(filter(None, raw.split("\n")))
     elif method == "tika":
         raw = parser.from_file(filepath)
         toc = list(filter(None, raw["content"].split("\n")))
