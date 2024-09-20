@@ -329,10 +329,19 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     prompt="Enter PDF page of page 1 numbered with arabic numerals. (corresponds usually to first chapter)",
 )
 @click.option(
+    "-p",
+    "--parser",
+    default="pdfplumber",
+    help="Parsers for extracting table of contents (pdfplumber, tika (requires java) or pypdf).",
+    show_default=True,
+    type=click.Choice(["pdfplumber", "pypdf", "tika"], case_sensitive=False)
+)
+@click.option(
     "-m",
     "--missing_pages",
-    default=None,
-    help="Parser (tika or pdfplumber) used to automatically detect offset by verifying book page number matches expected PDF page.",
+    is_flag=True,
+    default=False,
+    help="Automatically recompute offsets by verifying book page number matches expected PDF page.",
     show_default=True,
 )
 @click.option(
@@ -342,14 +351,13 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     default=False,
     help="Outputs PDF file containing the pages provided for the table of contents.",
 )
-def tocPDF(filename, start_toc, end_toc, offset, missing_pages, debug):
+def tocPDF(filename, start_toc, end_toc, offset, parser, missing_pages, debug):
     """Generates outlined PDF based on the Table of Contents.
-    Version: 0.1
 
-    Example: tocPDF -s 3 -e 5 -o 9 -m tika example.pdf"""
+    Example: tocPDF -s 3 -e 5 -o 9 -p pypdf -m example.pdf"""
     filepath = "./" + filename
     outpath = generate_toc_pdf(filepath, start_toc, end_toc)
-    toc = extract_toc_list_from_pdf(outpath, missing_pages, debug)
+    toc = extract_toc_list_from_pdf(outpath, parser, debug)
     with pdfplumber.open(filepath) as file_reader:
         write_new_pdf_toc(filepath, toc, start_toc, offset, missing_pages, file_reader)
 
