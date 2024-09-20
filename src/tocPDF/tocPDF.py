@@ -300,48 +300,7 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
 
 # %%
 
-### --- Test Examples ---
-
-# === Relativistic Quantum Chemistr ===
-# filepath = 'Relativistic_Quantum_Chemistry.pdf'
-# outpath = generate_toc_pdf(filepath, 6, 18)
-# toc = extract_toc_list_from_pdf(outpath, debug=True, extraction_method='tika')
-# print(f'Opening {filepath} with pdfplumber')
-# with pdfplumber.open(filepath) as file_reader:
-#   print(f'PDF successfully opened.')
-#   write_new_pdf_toc(filepath, toc, 6, 24, True, file_reader)
-# === End ===
-
-# === Leveque 1990 ===
-# filepath = 'LEVEQUE1990_Book_NumericalMethodsForConservatio.pdf'
-# outpath = generate_toc_pdf(filepath, 5, 8)
-# toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber',debug=True)
-# print(f'Opening {filepath} with pdfplumber')
-# with pdfplumber.open(filepath) as file_reader:
-#   print(f'PDF successfully opened.')
-#   write_new_pdf_toc(filepath, toc, 6, 10, True, file_reader)
-# === End ===
-
-# # === Discontinuous Galerkin ===
-# filepath = 'DiscontinuousGalerkin.pdf'
-# outpath = generate_toc_pdf(filepath, 10, 13)
-# toc = extract_toc_list_from_pdf(outpath, extraction_method='tika', debug=True)
-# with pdfplumber.open(filepath) as file_reader:
-#   print(f'pdfplumber opened file')
-#   write_new_pdf_toc(filepath, toc, 10, 14, 1, file_reader)
-# === End===
-
-# === Bayesian ===
-# filepath = 'bayesian_data.pdf'
-# outpath = generate_toc_pdf(filepath, 10, 13)
-# toc = extract_toc_list_from_pdf(outpath, extraction_method='pdfplumber', debug=True)
-# with pdfplumber.open(filepath) as file_reader:
-#   print(f'pdfplumber opened file')
-#   write_new_pdf_toc(filepath, toc, 10, 14, 1, file_reader)
-# === End ===
-# %%
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
-
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("filename")
