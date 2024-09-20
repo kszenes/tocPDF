@@ -68,63 +68,79 @@ def read_toc(
     else:
         raise Exception("Unkown method used for converting toc to list!")
 
-    print(f"Used {method} parser for converting table of content to list.")
-    # Cleaning up toc
-    toc_clean = [re.sub(r"(\.){2,}| \.| ·|", "", i) for i in toc]
-    toc_clean = [re.sub(r"(\w)\.(?!\S)", r"\1", i) for i in toc_clean]
-    toc_clean = [re.sub(r" +", r" ", i) for i in toc_clean]
-    toc_clean = [re.sub(r" $", r"", i) for i in toc_clean]
-    toc_only = list(filter(filter_chapter, toc_clean))
+    print(f"Used {method} parser for extracting table of contents.")
     if debug:
-        print("\n=== Input TOC ===\n")
-        for item in toc_only:
+        print("\n=== Raw Parsed TOC ===\n")
+        for item in toc:
+            print(item + "\tpagenumber: " + item.split(" ")[-1])
+
+    toc_only = clean_toc(toc)
+
+    if debug:
+        print("\n=== Cleaned TOC ===\n")
+        for item in toc:
             print(item + "\tpagenumber: " + item.split(" ")[-1])
     return toc_only
 
 
-# TODO:
-# Does not support format Chapter 3 ..... 12 (LEVEQUE 1990) (use tabula?)
-# Does not support indenting instead of 1.1 (Numerical Computing)
-# Make Annex new parent chapter
-def extract_toc_list_from_pdf(
-    filepath: str,
-    extraction_method: Optional[str] = "tika",
-    debug: Optional[bool] = False,
-) -> List[str]:
-    """Extract list of toc (chapter name + page number) contained in tmp toc pdf"""
-    # Extract text from tmp_toc.pdf, reformat and filter relevant lines
-    toc_only = read_toc(filepath, extraction_method, debug)
+def clean_toc(toc: List[str]):
+    """Cleans the parsed toc from superfluous spaces and dots"""
+    # Remove dots in table of contents
+    toc_clean = [re.sub(r"[\s+\.+\s+]+", " ", i) for i in toc]
+    toc_clean = [re.sub(r"(\w)\.(?!\S)", r"\1", i) for i in toc_clean]
+    # Remove more than one successive spaces
+    toc_clean = [re.sub(r" +", r" ", i) for i in toc_clean]
+    # Remove trailing spaces
+    toc_clean = [re.sub(r" $", r"", i) for i in toc_clean]
+    toc_only = list(filter(filter_chapter, toc_clean))
+    return toc_only
 
-    # -begin: join multilined chapters into 1-
+def join_multiline_sections(toc: List[str]):
+    """Join multiline section titles"""
     correct_list = []
     i = 0
-    while i < len(toc_only):
+    while i < len(toc):
         # contains entire line
-        complete_line_flag = re.search(r"^\d.* [A-Z].* \d+$", toc_only[i])
+        complete_line_flag = re.search(r"^\d.* [A-Z].* \d+$", toc[i])
         if not complete_line_flag:
             # check if joined with next line completes to entire line
-            if i + 1 < len(toc_only):
+            if i + 1 < len(toc):
                 # check if the next line is already complete
                 # signifies a parsing error in the current line
-                is_next_line_full = re.search(r"^\d.* [A-Z].* \d+$", toc_only[i + 1])
+                is_next_line_full = re.search(r"^\d.* [A-Z].* \d+$", toc[i + 1])
                 if not is_next_line_full:
                     complete_line_flag = re.search(
-                        r"^\d.* [A-Z].* \d+$", " ".join(toc_only[i : i + 2])
+                        r"^\d.* [A-Z].* \d+$", " ".join(toc[i : i + 2])
                     )
                     if complete_line_flag:
                         # if it does append
-                        correct_list.append(" ".join(toc_only[i : i + 2]))
+                        correct_list.append(" ".join(toc[i : i + 2]))
                         i += 1
                     else:
                         # else might be special case (e.g., annexes are numbered using letters)
-                        correct_list.append(toc_only[i])
+                        correct_list.append(toc[i])
                 else:
-                    correct_list.append(toc_only[i])
+                    correct_list.append(toc[i])
 
         else:
-            correct_list.append(toc_only[i])
+            correct_list.append(toc[i])
         i += 1
-    # -end: join multilined chapters into 1-
+    return correct_list
+
+
+# TODO:
+# - Does not support indenting instead of 1.1 (Numerical Computing)
+# - Make Annex new parent chapter
+def extract_toc_list_from_pdf(
+    filepath: str,
+    extraction_method: Optional[str] = "pdfplumber",
+    debug: Optional[bool] = False,
+) -> List[str]:
+    """Extract list of toc (chapter name + page number) contained in temporary toc pdf"""
+    # Extract text from tmp_toc.pdf, reformat and filter relevant lines
+    toc_only = read_toc(filepath, extraction_method, debug)
+
+    correct_list = join_multiline_sections(toc_only)
     if debug:
         print("\n=== Cleaned up TOC ===\n")
         for item in correct_list:
@@ -137,7 +153,7 @@ def write_new_pdf_toc(
     toc: List[str],
     start_toc: int,
     offset: int,
-    missing_pages: str,
+    is_missing_pages: bool,
     reader_pdf_file=None,
 ):
     """Generates out.pdf containing new outlined pdf."""
@@ -194,8 +210,9 @@ def write_new_pdf_toc(
                 "Reference",
                 "Appendix",
                 "Bibliography",
+                "Further Reading",
             ]
-            is_special_section = re.search("^(Exercise|Acknowledgment|Reference|Appendix|Bibliography)s*", name)
+            is_special_section = re.search(f"^({'|'.join(special_sections)})s*", name)
             if is_special_section:
                 # special sections usually go under the parent
                 writer.add_outline_item(name, page_num, parent=hierarchy[0])
@@ -204,7 +221,7 @@ def write_new_pdf_toc(
                 continue
             else:
                 # if missing pages set, will automatically recompute offset
-                if missing_pages:
+                if is_missing_pages:
                     # compute new offset and page number
                     offset = recompute_offset(page_num, offset, reader_pdf_file)
                     page_num = offset + int(page_num_original)
@@ -227,7 +244,7 @@ def find_page_number(page) -> int:
     """Read the page number of a page."""
     line_list = page.extract_text().split("\n")
     # check first 3 text boxes for page number
-    for i in range(3):
+    for i in range(min(3, len(line_list))):
         found_number = re.findall(
             r"^\d+ | \d+$", line_list[i]
         )  # number at beginning or end of line
