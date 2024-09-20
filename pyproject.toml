@@ -10,7 +10,8 @@ dependencies = [
   "tika",
   "click",
   "pdfplumber",
-  "tqdm"
+  "tqdm",
+  "pytest"
 ]
 authors = [
   {name = "Kalman Szenes", email =  "szenes.kalman@gmail.com"}
