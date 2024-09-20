@@ -1,0 +1,136 @@
+\documentclass{book}
+
+\usepackage{lipsum}
+\usepackage{emptypage}
+
+% Remove dots
+\usepackage[titles]{tocloft}
+\renewcommand{\cftdot}{}
+
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\begin{document}
+
+\author{Kalman Szenes}
+\title{Example PDF}
+\maketitle
+
+\frontmatter %Use lowercase Roman numerals for page numbers
+\chapter*{Foreword}
+\addcontentsline{toc}{chapter}{Foreword}
+\lipsum
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+\lipsum
+
+\tableofcontents
+
+\mainmatter % Now Use Arabic numerals for page numbers
+
+\chapter{First Chapter}
+\lipsum
+\section{First Section}
+\lipsum
+\subsection{First Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+\subsection{Second Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+
+\section{Second Section}
+\lipsum
+\subsection{First Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+\subsection{Second Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
+\lipsum
+\section*{Further Reading}
+\addcontentsline{toc}{section}{Further Reading}
+\lipsum
+
+\chapter{Second Chapter}
+\lipsum
+\section{First Section}
+\lipsum
+\subsection{First Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+\subsection{Second Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+
+\section{Second Section}
+\lipsum
+\subsection{First Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+\subsection{Second Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
+\lipsum
+\section*{Exercise}
+\addcontentsline{toc}{section}{Exercise}
+\lipsum
+
+\chapter{Third Chapter}
+\lipsum
+\section{First Section}
+\lipsum
+\subsection{First Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+\subsection{Second Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+
+\section{Second Section}
+\lipsum
+\subsection{First Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+\subsection{Second Subsection}
+\subsubsection{First Subsubsection}
+\lipsum
+\subsubsection{Second Subsubsection}
+\lipsum
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
+\lipsum
+\section*{Exercise}
+\addcontentsline{toc}{section}{Exercise}
+\lipsum
+
+\end{document}
