@@ -25,6 +25,7 @@ class TestTOCExtractor:
         assert toc_pdfplumber == toc_pypdf
         assert toc_pdfplumber == toc_tika
 
+
 class TestTOCCleaning:
     def test_clean_toc(self):
         mock_toc = [
@@ -39,6 +40,7 @@ class TestTOCCleaning:
             "1.2 Shorter section 3",
         ]
         cleaned_toc = join_multiline_sections(mock_toc)
+        assert correct_toc == cleaned_toc
 
     def test_extract_toc_list_from_pdf(self):
         moc_toc = [

@@ -26,7 +26,7 @@ The package can be downloaded using pip:
 ```shell
 pip install tocPDF
 ```
-## Available Parsers 
+## Available Parsers
 This package supports a number of different parsers for extracting the table of contents of from the PDF. Since the format of the table of contents can vary significantly, different parsers might perform differently depending on the format. If you are unhappy with the results, please try a different parser to see if the results are improved. They can be selected using the `-p` options. The supported parsers are:
 - [pypdf](https://github.com/py-pdf/pypdf)
 - [pdfplumber](https://github.com/jsvine/pdfplumber)
@@ -92,6 +92,3 @@ The format for table of contents varies from document to document and I can not 
 
 ## Alternative Software
 In case the generated outline is slightly off, I recommend using the [jpdfbookmarks](https://github.com/SemanticBeeng/jpdfbookmarks) (can be directly downloaded from [sourceforge](https://sourceforge.net/projects/jpdfbookmarks/)) which is a nice piece of free software for manually editing bookmarks for PDFs.
-
-
-
