@@ -11,8 +11,8 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 class TestTOCExtractor:
     @classmethod
     def setup_class(cls):
-        os.listdir(HERE)
-        os.listdir(os.path.join(HERE, "pdfs"))
+        print(f"{os.listdir(HERE) = }")
+        print(f"{os.listdir(os.path.join(HERE, "pdfs")) = }")
         cls.fpath = os.path.join(HERE, "pdfs/dotted.pdf")
         cls.outpath = generate_toc_pdf(cls.fpath, 7, 8)
 
