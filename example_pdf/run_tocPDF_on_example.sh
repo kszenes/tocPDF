@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-tocPDF -s 3 -e 5 -o 9 example.pdf
+tocPDF -s 7 -e 8 -o 9 example.pdf
