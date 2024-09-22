@@ -105,6 +105,7 @@ def clean_toc(toc: List[str]):
     toc_only = list(filter(filter_chapter, toc_clean))
     return toc_only
 
+
 def join_multiline_sections(toc: List[str]):
     """Join multiline section titles"""
     correct_list = []
@@ -312,6 +313,7 @@ def recompute_offset(page_num: int, offset: int, pdfplumber_reader) -> int:
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
+
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("filename")
 @click.option(
@@ -344,7 +346,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     default="pdfplumber",
     help="Parsers for extracting table of contents (pdfplumber, tika (requires java) or pypdf).",
     show_default=True,
-    type=click.Choice(["pdfplumber", "pypdf", "tika"], case_sensitive=False)
+    type=click.Choice(["pdfplumber", "pypdf", "tika"], case_sensitive=False),
 )
 @click.option(
     "-m",
