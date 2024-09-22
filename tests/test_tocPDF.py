@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import pytest
 import os
-import tocPDF
 import pypdf
 
 from tocPDF.tocPDF import clean_toc, read_toc, generate_toc_pdf, join_multiline_sections
@@ -13,6 +11,8 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 class TestTOCExtractor:
     @classmethod
     def setup_class(cls):
+        os.listdir(HERE)
+        os.listdir(os.path.join(HERE, "pdfs"))
         cls.fpath = os.path.join(HERE, "pdfs/dotted.pdf")
         cls.outpath = generate_toc_pdf(cls.fpath, 7, 8)
 
