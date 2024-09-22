@@ -69,6 +69,16 @@ def read_toc(
         raise Exception("Unkown method used for converting toc to list!")
 
     print(f"Used {method} parser for extracting table of contents.")
+    # -- Cleaning up toc --
+    # Remove unnecessary dots
+    toc_clean = [re.sub(r"(\.){2,}| \.| ·|", "", i) for i in toc]
+    # Remove trailing dots
+    toc_clean = [re.sub(r"(\w)\.(?!\S)", r"\1", i) for i in toc_clean]
+    # Convert sequence of whitespace to single space character
+    toc_clean = [re.sub(r" +", r" ", i) for i in toc_clean]
+    # Remove trailing whitesapce
+    toc_clean = [re.sub(r" $", r"", i) for i in toc_clean]
+    toc_only = list(filter(filter_chapter, toc_clean))
     if debug:
         print("\n=== Raw Parsed TOC ===\n")
         for item in toc:
