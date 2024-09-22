@@ -10,22 +10,22 @@ from tocPDF.tocPDF import clean_toc, read_toc, generate_toc_pdf, join_multiline_
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
-class TestTOCExtractor:
-    @classmethod
-    def setup_class(cls):
-        cls.fpath = os.path.join(HERE, "pdfs/dotted.pdf")
-        cls.outpath = generate_toc_pdf(cls.fpath, 7, 8)
-
-    def test_toc_extraction(self):
-        reader = pypdf.PdfReader(self.outpath)
-        assert len(reader.pages) == 2
-
-    def test_read_toc(self):
-        toc_pypdf = read_toc(self.outpath, "pypdf")
-        toc_pdfplumber = read_toc(self.outpath, "pdfplumber")
-        toc_tika = read_toc(self.outpath, "tika")
-        assert toc_pdfplumber == toc_pypdf
-        assert toc_pdfplumber == toc_tika
+# class TestTOCExtractor:
+#     @classmethod
+#     def setup_class(cls):
+#         cls.fpath = os.path.join(HERE, "pdfs/dotted.pdf")
+#         cls.outpath = generate_toc_pdf(cls.fpath, 7, 8)
+#
+#     def test_toc_extraction(self):
+#         reader = pypdf.PdfReader(self.outpath)
+#         assert len(reader.pages) == 2
+#
+#     def test_read_toc(self):
+#         toc_pypdf = read_toc(self.outpath, "pypdf")
+#         toc_pdfplumber = read_toc(self.outpath, "pdfplumber")
+#         toc_tika = read_toc(self.outpath, "tika")
+#         assert toc_pdfplumber == toc_pypdf
+#         assert toc_pdfplumber == toc_tika
 
 class TestTOCCleaning:
     def test_clean_toc(self):

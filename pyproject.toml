@@ -4,14 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tocPDF"
-version = "0.3.4"
+dynamic = ["version"]
 dependencies = [
   "pypdf",
   "tika",
   "click",
   "pdfplumber",
   "tqdm",
-  "pytest"
 ]
 authors = [
   {name = "Kalman Szenes", email =  "szenes.kalman@gmail.com"}
@@ -24,6 +23,9 @@ classifiers = [
     "Operating System :: OS Independent"
 ]
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.urls]
 Repository = "https://github.com/kszenes/tocPDF"
 
@@ -32,4 +34,3 @@ tocPDF = "tocPDF.tocPDF:tocPDF"
 
 [tools.dist.bdist_wheel]
 universal = true
-
