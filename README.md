@@ -1,4 +1,7 @@
 # tocPDF
+
+![Tests](https://github.com/kszenes/tocPDF/actions/workflows/python-app.yml/badge.svg)
+
 This project was created due to the lack of outlines included with most digital PDFs of textbooks.
 This command line tools aims at resolving this by automatically generating the missing outline based on the table of contents.
 
