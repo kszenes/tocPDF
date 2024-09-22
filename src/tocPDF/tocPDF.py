@@ -157,6 +157,7 @@ def write_new_pdf_toc(
     offset: int,
     is_missing_pages: bool,
     reader_pdf_file=None,
+    inplace: bool = False,
 ):
     """Generates out.pdf containing new outlined pdf."""
     if reader_pdf_file is None:
@@ -237,8 +238,9 @@ def write_new_pdf_toc(
                     )
 
         # write out.pdf file
-        with open("./out.pdf", "wb") as out_pdf:
-            print("\nOutlined PDF written to: out.pdf\n")
+        outpath = filepath if inplace else "out.pdf"
+        with open(outpath, "wb") as out_pdf:
+            print(f"\nOutlined PDF written to: {outpath}\n")
             writer.write(out_pdf)
 
 
@@ -348,13 +350,20 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     show_default=True,
 )
 @click.option(
+    "-i",
+    "--inplace",
+    is_flag=True,
+    default=False,
+    help="Overwrite original PDF with new outline.",
+)
+@click.option(
     "-d",
     "--debug",
     is_flag=True,
     default=False,
     help="Outputs PDF file containing the pages provided for the table of contents.",
 )
-def tocPDF(filename, start_toc, end_toc, offset, parser, missing_pages, debug):
+def tocPDF(filename, start_toc, end_toc, offset, parser, missing_pages, inplace, debug):
     """Generates outlined PDF based on the Table of Contents.
 
     Example: tocPDF -s 3 -e 5 -o 9 -p pypdf -m example.pdf"""
@@ -362,7 +371,9 @@ def tocPDF(filename, start_toc, end_toc, offset, parser, missing_pages, debug):
     outpath = generate_toc_pdf(filepath, start_toc, end_toc)
     toc = extract_toc_list_from_pdf(outpath, parser, debug)
     with pdfplumber.open(filepath) as file_reader:
-        write_new_pdf_toc(filepath, toc, start_toc, offset, missing_pages, file_reader)
+        write_new_pdf_toc(
+            filepath, toc, start_toc, offset, missing_pages, file_reader, inplace
+        )
 
 
 if __name__ == "__main__":
