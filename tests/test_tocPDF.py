@@ -51,6 +51,7 @@ class TestTOCCleaning:
             "5 Section . . . . . . . .5",
             "6 Section. . . . . . . . 6",
             "7 Section. . . . . . . .7",
+            "7.1 Subsection. . . . . . . .8",
         ]
         correct_toc = [
             "1 Section 1",
@@ -60,6 +61,7 @@ class TestTOCCleaning:
             "5 Section 5",
             "6 Section 6",
             "7 Section 7",
+            "7.1 Subsection 8",
         ]
         cleaned_toc = clean_toc(moc_toc)
         assert correct_toc == cleaned_toc

@@ -69,16 +69,6 @@ def read_toc(
         raise Exception("Unkown method used for converting toc to list!")
 
     print(f"Used {method} parser for extracting table of contents.")
-    # -- Cleaning up toc --
-    # Remove unnecessary dots
-    toc_clean = [re.sub(r"(\.){2,}| \.| ·|", "", i) for i in toc]
-    # Remove trailing dots
-    toc_clean = [re.sub(r"(\w)\.(?!\S)", r"\1", i) for i in toc_clean]
-    # Convert sequence of whitespace to single space character
-    toc_clean = [re.sub(r" +", r" ", i) for i in toc_clean]
-    # Remove trailing whitesapce
-    toc_clean = [re.sub(r" $", r"", i) for i in toc_clean]
-    toc_only = list(filter(filter_chapter, toc_clean))
     if debug:
         print("\n=== Raw Parsed TOC ===\n")
         for item in toc:
@@ -95,15 +85,16 @@ def read_toc(
 
 def clean_toc(toc: List[str]):
     """Cleans the parsed toc from superfluous spaces and dots"""
-    # Remove dots in table of contents
-    toc_clean = [re.sub(r"[\s+\.+\s+]+", " ", i) for i in toc]
-    toc_clean = [re.sub(r"(\w)\.(?!\S)", r"\1", i) for i in toc_clean]
+    # Remove superfluous dots in table of contents
+    toc = [re.sub(r"\s+\.*", " ", i) for i in toc]
+    toc = [re.sub(r"\.*\s+", " ", i) for i in toc]
+    toc = [re.sub(r"(\w)\.(?!\S)", r"\1", i) for i in toc]
     # Remove more than one successive spaces
-    toc_clean = [re.sub(r" +", r" ", i) for i in toc_clean]
+    toc = [re.sub(r" +", r" ", i) for i in toc]
     # Remove trailing spaces
-    toc_clean = [re.sub(r" $", r"", i) for i in toc_clean]
-    toc_only = list(filter(filter_chapter, toc_clean))
-    return toc_only
+    toc = [re.sub(r" $", r"", i) for i in toc]
+    toc = list(filter(filter_chapter, toc))
+    return toc
 
 
 def join_multiline_sections(toc: List[str]):
