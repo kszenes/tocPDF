@@ -73,7 +73,7 @@ and then the user will be prompted to add the start/end pages of the PDF as well
 
 These parameters can be directly provided as arguments to the CLI. For instance, the following command generates the correct outlined PDF for the example document found in `example_pdf/example.pdf`:
 ```shell
-tocPDF --start_toc 7 --end_toc 8 --offset 9 --parser pypdf -m example.pdf
+tocPDF --start_toc 7 --end_toc 8 --offset 9 --parser pypdf --missing_pages example.pdf
 ```
 Or equivalently:
 ```shell
