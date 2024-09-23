@@ -237,8 +237,10 @@ def write_new_pdf_toc(
                         name, page_num, parent=hierarchy[level - 1]
                     )
 
-        # write out.pdf file
-        outpath = filepath if inplace else "out.pdf"
+        # add _toc to filename for outplace
+        outplace_path = re.sub(r"(.*/)?([^/]+)(\.pdf)", r"\1\2_toc.pdf", filepath)
+        print(f"{outplace_path = }")
+        outpath = filepath if inplace else outplace_path
         with open(outpath, "wb") as out_pdf:
             print(f"\nOutlined PDF written to: {outpath}\n")
             writer.write(out_pdf)
@@ -367,7 +369,7 @@ def tocPDF(filename, start_toc, end_toc, offset, parser, missing_pages, inplace,
     """Generates outlined PDF based on the Table of Contents.
 
     Example: tocPDF -s 3 -e 5 -o 9 -p pypdf -m example.pdf"""
-    filepath = "./" + filename
+    filepath = filename
     outpath = generate_toc_pdf(filepath, start_toc, end_toc)
     toc = extract_toc_list_from_pdf(outpath, parser, debug)
     with pdfplumber.open(filepath) as file_reader:
