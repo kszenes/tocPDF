@@ -1,28 +1,11 @@
 # tocPDF
-
 ![Tests](https://github.com/kszenes/tocPDF/actions/workflows/python-app.yml/badge.svg)
-
 This project was created due to the lack of outlines included with most digital PDFs of textbooks.
 This command line tools aims at resolving this by automatically generating the missing outline based on the table of contents.
 
-## Table of Contents
-- [tocPDF](#tocpdf)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-    - [PIP](#pip)
-    - [Manually](#manually)
-  - [Inconsistent Offset](#inconsistent-offset)
-  - [Usage](#usage)
-    - [Example](#example)
-  - [Supported Formats](#supported-formats)
-  - [Alternative Software](#alternative-software)
-
 ## Installation
 
-### PIP
-
-The package can be downloaded using pip:
-
+The package can be installed using pip:
 ```shell
 pip install tocPDF
 ```
@@ -34,7 +17,6 @@ This package supports a number of different parsers for extracting the table of 
 
 ## Inconsistent Offset
 An additional difficulty with automatically generating outlines for PDFs stems from the fact that the PDF page numbers (displayed by your PDF viewer) do not match the page numbers of the book that you are trying to outline. In addition, certain PDFs will be missing some pages (usually between root chapters) compared to the book. This means that the page difference between the book and the PDF is not consistent throughout the document and needs to be recomputed between chapters. `tocPDF` can automatically recompute this offset by comparing the expected page number to the one found in the book.
-
 
 ## Usage
 This program requires 3 input parameters: the first and last PDF page of the table of contents as well as the PDF-book page offset. The offset is defined as the PDF page corresponding to the first book page with Arabic numerals (usually the first chapter). If your book has missing pages in between chapter, add the flag `--missing_pages`. This will dynamically adapt the page offset if there are missing pages. Note that this option will make the outline creation much more robust however the execution time will be a bit slower. If your PDF is not missing any pages you can omit this flag.
@@ -65,7 +47,6 @@ Options:
                                   provided for the table of contents.
   -h, --help                      Show this message and exit.
 ```
-
 
 ### Example
 The CLI can be simply invoked with the PDF as parameter:
