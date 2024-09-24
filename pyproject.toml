@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tocPDF"
-version = "0.3.9"
+dynamic = ["version"]
 dependencies = [
   "pypdf",
   "tika",
@@ -34,3 +34,6 @@ tocPDF = "tocPDF.tocPDF:tocPDF"
 
 [tools.dist.bdist_wheel]
 universal = true
+
+[tool.setuptools.dynamic]
+version = {attr = "tocPDF.__version__"}
