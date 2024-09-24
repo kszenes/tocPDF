@@ -339,7 +339,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     "-p",
     "--parser",
     default="pdfplumber",
-    help="Parsers for extracting table of contents (pdfplumber, tika (requires java) or pypdf).",
+    help="Parsers for extracting table of contents.",
     show_default=True,
     type=click.Choice(["pdfplumber", "pypdf", "tika"], case_sensitive=False),
 )
