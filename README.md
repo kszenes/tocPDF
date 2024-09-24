@@ -38,8 +38,7 @@ Options:
                                   number of first page with arabic numerals.
                                   [required]
   -p, --parser [pdfplumber|pypdf|tika]
-                                  Parsers for extracting table of contents
-                                  (pdfplumber, tika (requires java) or pypdf).
+                                  Parsers for extracting table of contents.
                                   [default: pdfplumber]
   -m, --missing_pages             Automatically recompute offsets by verifying
                                   book page number matches expected PDF page.
@@ -47,7 +46,7 @@ Options:
   -d, --debug                     Outputs PDF file containing the pages
                                   provided for the table of contents.
   -h, --help                      Show this message and exit.
-```
+  ```
 
 ### Example
 The CLI can be simply invoked with the PDF as parameter:
