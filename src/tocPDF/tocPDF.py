@@ -37,8 +37,8 @@ def generate_toc_pdf(filepath: str, start_toc: int, end_toc: int) -> str:
 def filter_chapter(line: str) -> bool:
     """Filter checking if line corresponds to chapter in toc."""
     # check if line contains beginning or end of toc line (used for multiline chapters)
-    flag_start = re.search(r"^\d+.* [A-Z]", line)
-    flag_end = re.search(r"[a-z]+ \d+$", line)
+    flag_start = re.search(r"^\d+.* [A-Za-z]", line)
+    flag_end = re.search(r"[A-za-z]+ \d+$", line)
     if flag_start is None and flag_end is None:
         return False
     else:
@@ -78,7 +78,7 @@ def read_toc(
 
     if debug:
         print("\n=== Cleaned TOC ===\n")
-        for item in toc:
+        for item in toc_only:
             print(item + "\tpagenumber: " + item.split(" ")[-1])
     return toc_only
 
@@ -93,6 +93,7 @@ def clean_toc(toc: List[str]):
     toc = [re.sub(r" +", r" ", i) for i in toc]
     # Remove trailing spaces
     toc = [re.sub(r" $", r"", i) for i in toc]
+    # Remove lines which do not contain start or end of a multiline
     toc = list(filter(filter_chapter, toc))
     return toc
 
