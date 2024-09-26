@@ -310,6 +310,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
+@click.version_option()
 @click.argument("filename")
 @click.option(
     "-s",
