@@ -50,16 +50,24 @@ class TestTOCCleaning:
 
     def test_extract_toc_list_from_pdf(self):
         moc_toc = [
-            "2.4 General derivation of formal time-independent",
-            "perturbation theories 29",
-            "2.5 Similarity transformation derivation of the formal",
-            "perturbation equations and quasidegenerate PT 46",
+            "1 Section                 1",
+            "2 Section                 2   ",
+            "3 Section ................................... 3",
+            "4 Section . . . . . . . . 4",
+            "5 Section . . . . . . . .5",
+            "6 Section. . . . . . . . 6",
+            "7 Section. . . . . . . .7",
+            "7.1 Subsection. . . . . . . .8",
         ]
         correct_toc = [
-            "2.4 General derivation of formal time-independent",
-            "perturbation theories 29",
-            "2.5 Similarity transformation derivation of the formal",
-            "perturbation equations and quasidegenerate PT 46",
+            "1 Section 1",
+            "2 Section 2",
+            "3 Section 3",
+            "4 Section 4",
+            "5 Section 5",
+            "6 Section 6",
+            "7 Section 7",
+            "7.1 Subsection 8",
         ]
         cleaned_toc = clean_toc(moc_toc)
         assert correct_toc == cleaned_toc
