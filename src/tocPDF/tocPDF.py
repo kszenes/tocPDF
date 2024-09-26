@@ -240,7 +240,6 @@ def write_new_pdf_toc(
 
         # add _toc to filename for outplace
         outplace_path = re.sub(r"(.*/)?([^/]+)(\.pdf)", r"\1\2_toc.pdf", filepath)
-        print(f"{outplace_path = }")
         outpath = filepath if inplace else outplace_path
         with open(outpath, "wb") as out_pdf:
             print(f"\nOutlined PDF written to: {outpath}\n")
