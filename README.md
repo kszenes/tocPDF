@@ -4,6 +4,8 @@
 This project was created due to the lack of outlines included with most digital PDFs of textbooks.
 This command line tools aims at resolving this by automatically generating the missing outline based on the table of contents.
 
+https://github.com/user-attachments/assets/d73711d9-c236-4716-8dba-dfb4c0851722
+
 ## Installation
 
 The package can be installed using pip:
