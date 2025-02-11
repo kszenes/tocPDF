@@ -8,10 +8,23 @@ https://github.com/user-attachments/assets/d73711d9-c236-4716-8dba-dfb4c0851722
 
 ## Installation
 
-The package can be installed using pip:
-```shell
+### PyPI
+
+The package can be installed from PyPI:
+
+```sh
 pip install tocPDF
+# although I would recommend using a tool like `pipx` or `uv tool`
+# to avoid polluting your global environment
 ```
+### Nix
+
+There is also a Nix [package](https://search.nixos.org/packages?channel=24.11&from=0&size=50&sort=relevance&type=packages&query=tocPDF) that has been created and is maintained by [dansbandit](https://github.com/dansbandit) if you prefer:
+
+```sh
+nix-shell -p tocpfd
+```
+
 ## Available Parsers
 This package supports a number of different parsers for extracting the table of contents of from the PDF. The different parsers might yield varying results depending on the format of the table of contents. Therefore, if you are unhappy with the results of `tocPDF`, make sure to try a different parser to see if the results are improved. They can be selected using the `-p` options. The supported parsers are:
 - [pdfplumber](https://github.com/jsvine/pdfplumber) (default)
