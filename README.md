@@ -65,17 +65,17 @@ Options:
 
 ### Example
 The CLI can be simply invoked with the PDF as parameter:
-```shell
+```sh
 tocPDF example.pdf
 ```
 which will interactively prompt the user for the start/end pages of the PDF as well as the offset to the first page of the PDF.
 
 These parameters can be directly provided as arguments to the CLI. For instance, the following command generates the correct outlined PDF for the example document found in `example_pdf/example.pdf`:
-```shell
+```sh
 tocPDF --start_toc 7 --end_toc 8 --offset 9 --parser pypdf --missing_pages example.pdf
 ```
 Or equivalently:
-```shell
+```sh
 tocPDF -s 7 -e 8 -o 9 -p pypdf -m example.df
 ```
 By default the outlined PDF written to `{filename}_toc.pdf`. However, it may also be performed inplace using the `-i/--inplace` flag which will overwrite the outline of the original document.
