@@ -19,7 +19,7 @@ pip install tocPDF
 ```
 ### Nix
 
-There is also a Nix [package](https://search.nixos.org/packages?channel=24.11&from=0&size=50&sort=relevance&type=packages&query=tocPDF) that has been created and is maintained by [dansbandit](https://github.com/dansbandit) if you prefer:
+There is also a Nix [package](https://search.nixos.org/packages?channel=24.11&from=0&size=50&sort=relevance&type=packages&query=tocPDF) that has been created and is maintained externally by [dansbandit](https://github.com/dansbandit) if you prefer:
 
 ```sh
 nix-shell -p tocpfd
