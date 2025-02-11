@@ -14,8 +14,7 @@ The package can be installed from PyPI:
 
 ```sh
 pip install tocPDF
-# although I would recommend using a tool like `pipx` or `uv tool`
-# to avoid polluting your global environment
+# although I would recommend using a tool like `pipx` or `uv tool` to avoid polluting your global environment
 ```
 ### Nix
 
