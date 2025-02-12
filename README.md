@@ -1,8 +1,8 @@
 # tocPDF
 ![Tests](https://github.com/kszenes/tocPDF/actions/workflows/python-app.yml/badge.svg)
 
-This project was created due to the lack of outlines included with most digital PDFs of textbooks.
-This command line tools aims at resolving this by automatically generating the missing outline based on the table of contents.
+This project was created due to the frequent lack of outlines included with most digital PDFs of textbooks.
+This command line tools aims at resolving this by automatically generating the missing outline based on the table of contents contained at the beginning of the book.
 
 https://github.com/user-attachments/assets/d73711d9-c236-4716-8dba-dfb4c0851722
 
@@ -10,7 +10,7 @@ https://github.com/user-attachments/assets/d73711d9-c236-4716-8dba-dfb4c0851722
 
 ### PyPI
 
-The package can be installed from PyPI:
+The package is distributed through PyPI:
 
 ```sh
 pip install tocPDF
@@ -19,7 +19,7 @@ pip install tocPDF
 ```
 ### Nix
 
-There is also a Nix [package](https://search.nixos.org/packages?channel=24.11&from=0&size=50&sort=relevance&type=packages&query=tocPDF) that has been created and is maintained externally by [dansbandit](https://github.com/dansbandit) if you prefer:
+There is also a Nix [package](https://search.nixos.org/packages?channel=24.11&from=0&size=50&sort=relevance&type=packages&query=tocPDF) that has been created and is maintained externally by [dansbandit](https://github.com/dansbandit):
 
 ```sh
 nix-shell -p tocpfd
